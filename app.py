@@ -2,7 +2,6 @@ from flask import Flask, render_template, url_for, request
 from flask import jsonify
 import section_plot
 import ast
-import json
 
 
 
