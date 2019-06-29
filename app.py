@@ -2,14 +2,14 @@ from flask import Flask, render_template, url_for, request
 from flask import jsonify
 import section_plot
 import ast
-from flask_cors import CORS, cross_origin
+# from flask_cors import CORS, cross_origin
 
 
 
 
 app = Flask(__name__)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+# cors = CORS(app)
+# app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route('/', methods=['GET', 'POST'])
 def index2():

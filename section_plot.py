@@ -220,12 +220,12 @@ def initializeAnalysis(shapes):
             "html": htmlLower,
             "geom": lower
         },
-        "MirroredProps": {
+        "UpperMirroredProps": {
             "props": upperMirroredProps.to_dict(),
             "html": htmlUpperMirrored,
             "geom": upper_mirrored
         },
-        "MirroredProps": {
+        "LowerMirroredProps": {
             "props": lowerMirroredProps.to_dict(),
             "html": htmlLowerMirrored,
             "geom": lower_mirrored
