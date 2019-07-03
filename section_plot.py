@@ -100,8 +100,8 @@ def initializeAnalysis(shapes):
         # html_fig = mpld3.fig_to_html(fig=fig)
         html_fig = "holder"
 
-        data = np.array([Iox_all, Ioy_all, xbar_cg, ybar_cg, Ay, Ax])
-        sec_props = pd.Series(data, index=["Iox_all", "Ioy_all", "xbar_cg", "ybar_cg", "Ay", "Ax"])
+        data = np.array([Iox_all, Ioy_all, xbar_cg, ybar_cg, Ay, Ax, max_x, max_y])
+        sec_props = pd.Series(data, index=["Iox_all", "Ioy_all", "xbar_cg", "ybar_cg", "Ay", "Ax", "max_x", "max_y"])
 
         return  sec_props, html_fig
 

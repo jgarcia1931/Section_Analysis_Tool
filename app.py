@@ -2,14 +2,17 @@ from flask import Flask, render_template, url_for, request
 from flask import jsonify
 import section_plot
 import ast
-from flask_cors import CORS, cross_origin
+# from flask_cors import CORS, cross_origin
+# from tweepyfunc import word_of_interest, analize_sentiment, clean_tweets, pull_tweets
+# import pandas as pd
+# import numpy as np
 
 
 
 
 app = Flask(__name__)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+# cors = CORS(app)
+# app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route('/', methods=['GET', 'POST'])
 def index2():
@@ -31,6 +34,76 @@ def index2():
         result = section_plot.initializeAnalysis(data)
         # return json.dumps(result)
         return jsonify(result)
+
+# @app.route('/tweepyapp', methods=['POST'])
+# def index2():
+#
+#     if request.method == 'POST':
+#
+#         if 'twitter_handle' in request.form:
+#             handle = request.form['twitter_handle']
+#             num_results = request.form['num_results']
+#             twitter_method = request.form.getlist("twitter_method")
+#
+#             data = pull_tweets(handle)
+#             if type(data) == str:
+#                 table_true = 2
+#                 return render_template('index2.html', table_op=str(table_true), handle=handle, data_str=data)
+#             else:
+#                 data.reset_index(drop=True, inplace=True)
+#                 rows = len(data)
+#                 tokened = []
+#                 for row in range(rows):
+#                     word_list = clean_tweets(data.loc[row, 'Tweets'])
+#                     tokened.append(word_list)
+#                 data['Tweets_clean'] = pd.Series(tokened)
+#
+#                 if twitter_method[0] == 'option1':
+#                     data_final = data[['Tweets', 'ID', 'Date', 'Tweets_clean']][:int(num_results)]
+#
+#                 if twitter_method[0] == 'option2':
+#                     data['Tweet_str'] = data['Tweets_clean'].apply(lambda x: ' '.join(x))
+#                     data['SA'] = np.array([analize_sentiment(tweet) for tweet in data['Tweet_str']])
+#
+#                     tweets_pos = []
+#                     data.reset_index(drop=True,inplace=True)
+#                     for row in range(len(data)):
+#                         if data.loc[row, 'SA'] < -.5:
+#                             tweets_pos.append(row)
+#                     data_final = data.iloc[tweets_pos, :][['Tweets', 'ID', 'Date', 'Tweets_clean']]
+#                     data_final.reset_index(drop=True,inplace=True)
+#                 word_search = "none"
+#
+#         if 'twitter_hand' in request.form:
+#             handle = request.form['twitter_hand']
+#             word_search = request.form['word_search']
+#
+#             data = pull_tweets(handle)
+#
+#             if type(data) == str:
+#                 table_true = 2
+#                 return render_template('index2.html', table_op=str(table_true), handle=handle, data_str=data)
+#             else:
+#                 data.reset_index(drop=True, inplace=True)
+#                 rows = len(data)
+#                 tokened = []
+#                 for row in range(rows):
+#                     word_list = clean_tweets(data.loc[row, 'Tweets'])
+#                     tokened.append(word_list)
+#                 data['Tweets_clean'] = pd.Series(tokened)
+#
+#                 data_final = word_of_interest(data, word_search)
+#
+#         if len(data_final) > 0:
+#             table_true = 1
+#         else:
+#             table_true = 0
+#
+#
+#         return render_template('index2.html', table_op=str(table_true),
+#                                data=data_final.to_html(classes="table table-striped"), handle=handle,
+#                                word_search=word_search)
+
 
 
 if __name__ == '__main__':
