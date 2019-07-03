@@ -211,7 +211,7 @@ def initializeAnalysis(shapes):
         },
 
         "Upper": {
-            "props": upperMirroredProps.to_dict(),
+            "props": upperShapeProps.to_dict(),
             "html": htmlUpper,
             "geom": upper
         },

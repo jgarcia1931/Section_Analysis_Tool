@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="37e76ea1-d685-46c5-ac7f-64144df6620b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/section_plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/section_plot.py" afterDir="false" />
-    </list>
+    <list default="true" id="37e76ea1-d685-46c5-ac7f-64144df6620b" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,11 +15,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="9" lean-forward="true" selection-start-line="9" selection-end-line="9" />
+            <state relative-caret-position="212">
+              <caret line="14" column="5" selection-start-line="14" selection-end-line="15" />
               <folding>
                 <element signature="e#0#58#0" expanded="true" />
               </folding>
@@ -31,10 +27,10 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/section_plot.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
+            <state relative-caret-position="595">
               <caret line="98" column="20" lean-forward="true" selection-start-line="98" selection-start-column="20" selection-end-line="98" selection-end-column="20" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
@@ -61,10 +57,10 @@
     <findStrings>
       <find>^</find>
       <find>base</find>
-      <find>plot_shapes</find>
       <find>print</find>
       <find>\n</find>
       <find>return</find>
+      <find>plot_shapes</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -76,8 +72,8 @@
         <option value="$PROJECT_DIR$/test.html" />
         <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/tweepyfunc.py" />
-        <option value="$PROJECT_DIR$/app.py" />
         <option value="$PROJECT_DIR$/section_plot.py" />
+        <option value="$PROJECT_DIR$/app.py" />
       </list>
     </option>
   </component>
@@ -229,12 +225,12 @@
       <workItem from="1561751561343" duration="926000" />
       <workItem from="1561767738735" duration="846000" />
       <workItem from="1561785026041" duration="1698000" />
-      <workItem from="1562165505260" duration="437000" />
+      <workItem from="1562165505260" duration="1165000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="43214000" />
+    <option name="totallyTimeSpent" value="43942000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="6" />
@@ -410,19 +406,9 @@
     <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/app.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" lean-forward="true" selection-start-line="9" selection-end-line="9" />
-          <folding>
-            <element signature="e#0#58#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/section_plot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
+        <state relative-caret-position="595">
           <caret line="98" column="20" lean-forward="true" selection-start-line="98" selection-start-column="20" selection-end-line="98" selection-end-column="20" />
           <folding>
             <element signature="e#0#38#0" expanded="true" />
@@ -430,6 +416,16 @@
             <element signature="e#3687#4803#0" />
             <element signature="e#4853#5364#0" />
             <element signature="e#5414#5925#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="14" column="5" selection-start-line="14" selection-end-line="15" />
+          <folding>
+            <element signature="e#0#58#0" expanded="true" />
           </folding>
         </state>
       </provider>
