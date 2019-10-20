@@ -137,11 +137,9 @@ def initializeAnalysis(shapes):
 
         return  sec_props, html_fig, max_x, max_y,
 
-    def split_shape(test, Y_divider, X_divider):
+    def split_shape_y(test, Y_divider):
         upper = []
         lower = []
-        left  = []
-        right = []
 
         # Upper Lower
         for i in range(len(test)):
@@ -168,6 +166,24 @@ def initializeAnalysis(shapes):
                 new_height = Y_divider - y_orig
                 lower.append([new_origin, new_base, new_height])
 
+        Iox_all_up,    Ioy_all_up,    xbar_cg_up,    ybar_cg_up,    Ay_up,    Ax_up,    Area_x_up,    Area_y_up    = section_properties(upper)
+        Iox_all_low,   Ioy_all_low,   xbar_cg_low,   ybar_cg_low,   Ay_low,   Ax_low,   Area_x_low,   Area_y_low   = section_properties(lower)
+
+        tollerance = abs(Area_x_up - Area_x_low)
+        if(tollerance < 0.005):
+            return upper, lower, Y_divider
+        if( (Area_x_up - Area_x_low) > 0.005 and (Area_x_up - Area_x_low) > 0 ):
+            upper, lower, Y_divider = split_shape_y(test, Y_divider + 0.01)
+        elif ( (Area_x_low - Area_x_up) > 0.005 and (Area_x_up - Area_x_low) > 0 ):
+            upper, lower, Y_divider = split_shape_y(test, Y_divider - 0.01)
+
+
+        return upper, lower, Y_divider
+
+    def split_shape_x(test, X_divider):
+        left  = []
+        right = []
+
         # Left Right
         for i in range(len(test)):
             x_orig = test[i][0][0]
@@ -193,31 +209,24 @@ def initializeAnalysis(shapes):
                 new_height = height
                 left.append([new_origin, new_base, new_height])
 
-        Iox_all_up, Ioy_all_up, xbar_cg_up, ybar_cg_up, Ay_up, Ax_up, Area_x_up, Area_y_up = section_properties(upper)
-        Iox_all_low, Ioy_all_low, xbar_cg_low, ybar_cg_low, Ay_low, Ax_low, Area_x_low, Area_y_low = section_properties(lower)
         Iox_all_right, Ioy_all_right, xbar_cg_right, ybar_cg_right, Ay_right, Ax_right, Area_x_right, Area_y_right = section_properties(right)
-        Iox_all_left, Ioy_all_left, xbar_cg_left, ybar_cg_left, Ay_left, Ax_left, Area_x_left, Area_y_left = section_properties(left)
-
-        tollerance = abs(Area_x_up - Area_x_low)
-        # if(tollerance < 0.005):
-        #     return upper, lower, right, left, Y_divider, X_divider
-        if( (Area_x_up - Area_x_low) > 0.005 and (Area_x_up - Area_x_low) > 0 ):
-            upper, lower,  right, left, Y_divider, X_divider = split_shape(test, Y_divider + 0.01)
-        elif ( (Area_x_low - Area_x_up) > 0.005 and (Area_x_up - Area_x_low) > 0 ):
-            upper, lower,  right, left, Y_divider, X_divider = split_shape(test, Y_divider - 0.01)
+        Iox_all_left,  Ioy_all_left,  xbar_cg_left,  ybar_cg_left,  Ay_left,  Ax_left,  Area_x_left,  Area_y_left  = section_properties(left)
 
         tollerance2 = abs(Area_x_right - Area_x_left)
-        if(tollerance2 < 0.005 * tollerance < 0.005):
-            return upper, lower, right, left, Y_divider, X_divider
+        if(tollerance2 < 0.005):
+            return right, left, X_divider
+        if(tollerance2 < 0.005 * tollerance2 < 0.005):
+            return right, left, X_divider
         if( (Area_x_right - Area_x_left) > 0.005 and (Area_x_right - Area_x_left) > 0 ):
-            upper, lower,  right, left, Y_divider, X_divider = split_shape(test, Y_divider, X_divider + 0.01)
+            right, left, X_divider = split_shape_x(test, X_divider + 0.01)
         elif ( (Area_x_left - Area_x_right) > 0.005 and (Area_x_right - Area_x_left) > 0 ):
-            upper, lower,  right, left, Y_divider, X_divider = split_shape(test, Y_divider, X_divider - 0.01)
+            right, left, X_divider = split_shape_x(test, X_divider - 0.01)
 
 
-        return upper, lower, right, left, Y_divider, X_divider
+        return right, left, X_divider
 
-    def upper_mirror(upper, C_divider):
+
+    def upper_mirror(upper, Y_divider):
         # x stays the same
         # New Y
         lower_mirror = []
@@ -225,7 +234,7 @@ def initializeAnalysis(shapes):
             x_orig   = i[0][0]
             y_orig   = i[0][1]
             height   = i[2]
-            y_mirror = C_divider - ((y_orig + height) - C_divider)
+            y_mirror = Y_divider - ((y_orig + height) - Y_divider)
             origin_mirror = (x_orig, y_mirror)
             base_mirror   = i[1]
             height_mirror = i[2]
@@ -234,7 +243,24 @@ def initializeAnalysis(shapes):
             upper.append(i)
         return upper
 
-    def lower_mirror(lower, C_divider):
+    def right_mirror(right, X_divider):
+        # y stays the same
+        # New x
+        left_mirror = []
+        for i in right:
+            x_orig   = i[0][0]
+            y_orig   = i[0][1]
+            base   = i[1]
+            x_mirror = X_divider - ((x_orig + base) - X_divider)
+            origin_mirror = (x_mirror, y_orig)
+            base_mirror   = i[1]
+            height_mirror = i[2]
+            left_mirror.append([origin_mirror, base_mirror, height_mirror])
+        for i in left_mirror:
+            right.append(i)
+        return right
+
+    def lower_mirror(lower, Y_divider):
         # x stays the same
         # New Y
         upper_mirror = []
@@ -242,7 +268,7 @@ def initializeAnalysis(shapes):
             x_orig   = i[0][0]
             y_orig   = i[0][1]
             height   = i[2]
-            y_mirror = (C_divider - (y_orig + height)) + C_divider
+            y_mirror = (Y_divider - (y_orig + height)) + Y_divider
             origin_mirror = (x_orig, y_mirror)
             base_mirror   = i[1]
             height_mirror = i[2]
@@ -251,13 +277,35 @@ def initializeAnalysis(shapes):
             lower.append(i)
         return lower
 
+    def left_mirror(left, X_divider):
+        # y stays the same
+        # New X
+        right_mirror = []
+        for i in left:
+            x_orig   = i[0][0]
+            y_orig   = i[0][1]
+            base   = i[1]
+
+            x_mirror = (X_divider - (x_orig + base)) + X_divider
+
+            origin_mirror = (x_mirror, y_orig)
+            base_mirror   = i[1]
+            height_mirror = i[2]
+            right_mirror.append([origin_mirror, base_mirror, height_mirror])
+        for i in right_mirror:
+            left.append(i)
+        return left
+
+
     print("********************************")
     print("Original Shape")
     originalShapeProps, htmlOriginal, max_x, max_y = plot_shapes(shapes)
     print("********************************")
 
     #Split Shapes
-    upper, lower, right, left, Y_divider, X_divider = split_shape(shapes, 2, 1)
+    upper, lower, Y_divider = split_shape_y(shapes, 1)
+    right, left, X_divider  = split_shape_x(shapes, 0.5)
+
 
     print("Upper Shape")
     upperShapeProps, htmlUpper = plot_shapes(list(upper),max_x, max_y)
@@ -268,11 +316,11 @@ def initializeAnalysis(shapes):
     print("********************************")
 
     print("Right Shape")
-    upperShapeProps, htmlUpper = plot_shapes(list(right),max_x, max_y,)
+    rightShapeProps, htmlRight = plot_shapes(list(right),max_x, max_y,)
     print("********************************")
 
     print("Left Shape")
-    lowerShapeProps, htmlLower = plot_shapes(list(left),max_x, max_y,)
+    leftShapeProps, htmlLeft = plot_shapes(list(left),max_x, max_y,)
     print("********************************")
 
     print("Upper Mirrored Shape")
@@ -284,8 +332,16 @@ def initializeAnalysis(shapes):
     lower_mirrored = lower_mirror(list(lower), Y_divider)
     lowerMirroredProps, htmlLowerMirrored = plot_shapes(lower_mirrored, max_x, max_y, mirror=True)
     print("********************************")
-
     
+    print("Right Mirrored Shape")
+    right_mirrored = right_mirror(list(right), X_divider)
+    rightMirroredProps, htmlRightMirrored = plot_shapes(right_mirrored, max_x, max_y, mirror=True)
+    print("********************************")
+
+    print("Left Mirrored Shape")
+    left_mirrored = left_mirror(list(left), X_divider)
+    leftMirroredProps, htmlLeftMirrored = plot_shapes(left_mirrored, max_x, max_y, mirror=True)
+    print("********************************")
 
     result = { "analysis": {
         "OriginalShape": {
@@ -293,17 +349,16 @@ def initializeAnalysis(shapes):
             "html": htmlOriginal,
             "geom": shapes
         },
-
-        # "Upper": {
-        #     "props": upperShapeProps.to_dict(),
-        #     "html": htmlUpper,
-        #     "geom": upper
-        # },
-        # "Lower": {
-        #     "props": lowerShapeProps.to_dict(),
-        #     "html": htmlLower,
-        #     "geom": lower
-        # },
+        "Upper": {
+            "props": upperShapeProps.to_dict(),
+            "html": htmlUpper,
+            "geom": upper
+        },
+        "Lower": {
+            "props": lowerShapeProps.to_dict(),
+            "html": htmlLower,
+            "geom": lower
+        },
         "UpperMirroredProps": {
             "props": upperMirroredProps.to_dict(),
             "html": htmlUpperMirrored,
@@ -313,6 +368,27 @@ def initializeAnalysis(shapes):
             "props": lowerMirroredProps.to_dict(),
             "html": htmlLowerMirrored,
             "geom": lower_mirrored
+        },
+
+        "Right": {
+            "props": rightShapeProps.to_dict(),
+            "html": htmlRight,
+            "geom": right
+        },
+        "Left": {
+            "props": leftShapeProps.to_dict(),
+            "html": htmlLeft,
+            "geom": left
+        },
+        "RightMirroredProps": {
+            "props": rightMirroredProps.to_dict(),
+            "html": htmlRightMirrored,
+            "geom": right_mirrored
+        },
+        "LeftMirroredProps": {
+            "props": leftMirroredProps.to_dict(),
+            "html": htmlLeftMirrored,
+            "geom": left_mirrored
         }
     }}
     print(json.dumps(result, indent=2))
