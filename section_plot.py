@@ -82,14 +82,20 @@ def initializeAnalysis(shapes):
         return Iox_all, Ioy_all, xbar_cg, ybar_cg, sums_x["Ay"], sums_y["Ax"], sums_x["Area"], sums_y["Area"]
 
     # shapes is and array of [ [lower left corner, base, height] ]
-    def plot_shapes(shapes, mirror=False):
+    def plot_shapes(shapes, max_x_init=0, max_y_init=0, mirror=False):
         Iox_all, Ioy_all, xbar_cg, ybar_cg, Ay, Ax, Area_x, Area_y = section_properties(shapes)
 
         if(mirror==True):
             Ay, Ax = section_properties(shapes, mirror=mirror, xbar_init=xbar_cg, ybar_init=ybar_cg)
 
-        max_x = 0.0
-        max_y = 0.0
+        if(max_x_init > 0):
+            max_x = max_x_init
+        else:
+            max_x = 0
+        if(max_y_init > 0):
+            max_y = max_y_init
+        else:
+            max_y = 0
         min_x = 9999.0
         min_y = 9999.0
 
@@ -110,14 +116,6 @@ def initializeAnalysis(shapes):
 
         for i in shapes:
             rect = Rectangle( i[0], i[1], i[2])
-            # if (i[0][0] + i[1]) > max_x:
-            #     max_x = (i[0][0] + i[1])
-            # if (i[0][1] + i[2]) > max_y:
-            #     max_y = (i[0][1] + i[2])
-            # if (i[0][0]) < min_x:
-            #     max_x = (i[0][0])
-            # if (i[0][1]) < min_y:
-            #     max_y = (i[0][1])
             patches.append(rect)
 
         ax.axhline(y=ybar_cg, color='r')
@@ -134,11 +132,16 @@ def initializeAnalysis(shapes):
         data = np.array([Iox_all, Ioy_all, xbar_cg, ybar_cg, Ay, Ax, max_x, max_y])
         sec_props = pd.Series(data, index=["Iox_all", "Ioy_all", "xbar_cg", "ybar_cg", "Ay", "Ax", "max_x", "max_y"])
 
-        return  sec_props, html_fig
+        if(max_x_init > 0):
+            return sec_props, html_fig
 
-    def split_shape(test, C_divider):
+        return  sec_props, html_fig, max_x, max_y,
+
+    def split_shape(test, Y_divider, X_divider):
         upper = []
         lower = []
+        left  = []
+        right = []
 
         # Upper Lower
         for i in range(len(test)):
@@ -149,38 +152,70 @@ def initializeAnalysis(shapes):
             x_max  = x_orig + base
             y_max  = y_orig + height
 
-            if (C_divider < y_orig) & (y_max > C_divider):
+            if (Y_divider < y_orig) & (Y_divider < y_max):
                 upper.append(test[i])
-            elif (C_divider > y_orig) & (y_max < C_divider):
+            elif (Y_divider > y_orig) & (Y_divider > y_max):
                 lower.append((test[i]))
-            elif (C_divider < y_max) & (C_divider > y_orig):
-                # print("Shape " + str(i + 1) + " needs to be divided")
-
+            elif (Y_divider < y_max) & (Y_divider > y_orig):
                 # Upper Shape
-                new_origin = (x_orig, C_divider)
+                new_origin = (x_orig, Y_divider)
                 new_base   = base
-                new_height = (height + y_orig) - C_divider
+                new_height = (height + y_orig) - Y_divider
                 upper.append([new_origin, new_base, new_height])
-
                 # Lower Shape
                 new_origin = (x_orig, y_orig)
                 new_base   = base
-                new_height = C_divider - y_orig
+                new_height = Y_divider - y_orig
                 lower.append([new_origin, new_base, new_height])
 
-        Iox_all_up, Ioy_all_up, xbar_cg_up, ybar_cg_up, Ay_up, Ax_up, Area_x_up, Area_y_up = section_properties(upper)
+        # Left Right
+        for i in range(len(test)):
+            x_orig = test[i][0][0]
+            y_orig = test[i][0][1]
+            base   = test[i][1]
+            height = test[i][2]
+            x_max  = x_orig + base
+            y_max  = y_orig + height
 
+            if (X_divider < x_orig) & (X_divider < x_max):
+                right.append(test[i])
+            elif (X_divider > x_orig) & (X_divider > x_max):
+                left.append((test[i]))
+            elif (X_divider < x_max) & (X_divider > x_orig):
+                # Right Shape
+                new_origin = (X_divider, y_orig)
+                new_base   = (base + x_orig) - X_divider
+                new_height = height
+                right.append([new_origin, new_base, new_height])
+                # Left Shape
+                new_origin = (x_orig, y_orig)
+                new_base   = X_divider - x_orig
+                new_height = height
+                left.append([new_origin, new_base, new_height])
+
+        Iox_all_up, Ioy_all_up, xbar_cg_up, ybar_cg_up, Ay_up, Ax_up, Area_x_up, Area_y_up = section_properties(upper)
         Iox_all_low, Ioy_all_low, xbar_cg_low, ybar_cg_low, Ay_low, Ax_low, Area_x_low, Area_y_low = section_properties(lower)
+        Iox_all_right, Ioy_all_right, xbar_cg_right, ybar_cg_right, Ay_right, Ax_right, Area_x_right, Area_y_right = section_properties(right)
+        Iox_all_left, Ioy_all_left, xbar_cg_left, ybar_cg_left, Ay_left, Ax_left, Area_x_left, Area_y_left = section_properties(left)
 
         tollerance = abs(Area_x_up - Area_x_low)
-        if(tollerance < 0.005):
-            return upper, lower, C_divider
+        # if(tollerance < 0.005):
+        #     return upper, lower, right, left, Y_divider, X_divider
         if( (Area_x_up - Area_x_low) > 0.005 and (Area_x_up - Area_x_low) > 0 ):
-            upper, lower, C_divider = split_shape(test, C_divider + 0.01)
+            upper, lower,  right, left, Y_divider, X_divider = split_shape(test, Y_divider + 0.01)
         elif ( (Area_x_low - Area_x_up) > 0.005 and (Area_x_up - Area_x_low) > 0 ):
-            upper, lower, C_divider = split_shape(test, C_divider - 0.01)
+            upper, lower,  right, left, Y_divider, X_divider = split_shape(test, Y_divider - 0.01)
 
-        return upper, lower, C_divider
+        tollerance2 = abs(Area_x_right - Area_x_left)
+        if(tollerance2 < 0.005 * tollerance < 0.005):
+            return upper, lower, right, left, Y_divider, X_divider
+        if( (Area_x_right - Area_x_left) > 0.005 and (Area_x_right - Area_x_left) > 0 ):
+            upper, lower,  right, left, Y_divider, X_divider = split_shape(test, Y_divider, X_divider + 0.01)
+        elif ( (Area_x_left - Area_x_right) > 0.005 and (Area_x_right - Area_x_left) > 0 ):
+            upper, lower,  right, left, Y_divider, X_divider = split_shape(test, Y_divider, X_divider - 0.01)
+
+
+        return upper, lower, right, left, Y_divider, X_divider
 
     def upper_mirror(upper, C_divider):
         # x stays the same
@@ -218,29 +253,39 @@ def initializeAnalysis(shapes):
 
     print("********************************")
     print("Original Shape")
-    originalShapeProps, htmlOriginal = plot_shapes(shapes)
+    originalShapeProps, htmlOriginal, max_x, max_y = plot_shapes(shapes)
     print("********************************")
 
     #Split Shapes
-    upper, lower, C_divider = split_shape(shapes, 0)
+    upper, lower, right, left, Y_divider, X_divider = split_shape(shapes, 2, 1)
 
-    # print("Upper Shape")
-    # upperShapeProps, htmlUpper = plot_shapes(list(upper))
-    # print("********************************")
-    #
-    # print("Lower Shape")
-    # lowerShapeProps, htmlLower = plot_shapes(list(lower))
-    # print("********************************")
+    print("Upper Shape")
+    upperShapeProps, htmlUpper = plot_shapes(list(upper),max_x, max_y)
+    print("********************************")
+
+    print("Lower Shape")
+    lowerShapeProps, htmlLower = plot_shapes(list(lower),max_x, max_y)
+    print("********************************")
+
+    print("Right Shape")
+    upperShapeProps, htmlUpper = plot_shapes(list(right),max_x, max_y,)
+    print("********************************")
+
+    print("Left Shape")
+    lowerShapeProps, htmlLower = plot_shapes(list(left),max_x, max_y,)
+    print("********************************")
 
     print("Upper Mirrored Shape")
-    upper_mirrored = upper_mirror(list(upper), C_divider)
-    upperMirroredProps, htmlUpperMirrored = plot_shapes(upper_mirrored, mirror=True)
+    upper_mirrored = upper_mirror(list(upper), Y_divider)
+    upperMirroredProps, htmlUpperMirrored = plot_shapes(upper_mirrored, max_x, max_y, mirror=True)
     print("********************************")
 
     print("Lower Mirrored Shape")
-    lower_mirrored = lower_mirror(list(lower), C_divider)
-    lowerMirroredProps, htmlLowerMirrored = plot_shapes(lower_mirrored, mirror=True)
+    lower_mirrored = lower_mirror(list(lower), Y_divider)
+    lowerMirroredProps, htmlLowerMirrored = plot_shapes(lower_mirrored, max_x, max_y, mirror=True)
     print("********************************")
+
+    
 
     result = { "analysis": {
         "OriginalShape": {
